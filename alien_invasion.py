@@ -48,26 +48,37 @@ class AlienInvasion:
                 if self.settings.debug_mode:  # Debug messages
                     print(event)
 
-                if event.key == pygame.K_ESCAPE:
-                    sys.exit()
-
-                if event.key == pygame.K_w:
-                    self.ship.moving_up = True
-                if event.key == pygame.K_s:
-                    self.ship.moving_down = True
-                if event.key == pygame.K_a:
-                    self.ship.moving_left = True
-                if event.key == pygame.K_d:
-                    self.ship.moving_right = True
+                self._check_keydown_events(event)
             elif event.type == pygame.KEYUP:
-                if event.key == pygame.K_w:
-                    self.ship.moving_up = False
-                if event.key == pygame.K_s:
-                    self.ship.moving_down = False
-                if event.key == pygame.K_a:
-                    self.ship.moving_left = False
-                if event.key == pygame.K_d:
-                    self.ship.moving_right = False
+                self._check_keyup_events(event)
+
+    def _check_keydown_events(self, event):
+        """Checks KEYDOWN events"""
+        # Other keys
+        if event.key == pygame.K_ESCAPE:
+            sys.exit()
+
+        # Movement keys
+        if event.key == pygame.K_w:
+            self.ship.moving_up = True
+        if event.key == pygame.K_s:
+            self.ship.moving_down = True
+        if event.key == pygame.K_a:
+            self.ship.moving_left = True
+        if event.key == pygame.K_d:
+            self.ship.moving_right = True
+
+    def _check_keyup_events(self, event):
+        """Checks KEYUP events"""
+        # Movement keys
+        if event.key == pygame.K_w:
+            self.ship.moving_up = False
+        if event.key == pygame.K_s:
+            self.ship.moving_down = False
+        if event.key == pygame.K_a:
+            self.ship.moving_left = False
+        if event.key == pygame.K_d:
+            self.ship.moving_right = False
 
     def _update_screen(self):
         """Update the Pygame window"""
