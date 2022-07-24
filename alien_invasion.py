@@ -39,9 +39,17 @@ class AlienInvasion:
         while True:
             self._check_events()
             self.ship.update()
-            self.bullets.update()
+            self._update_bullets()
 
             self._update_screen()
+
+    def _update_bullets(self):
+        self.bullets.update()
+        for bullet in self.bullets.copy():
+            if bullet.x > self.settings.window_width:
+                self.bullets.remove(bullet)
+        if self.settings.debug_mode:
+            print(len(self.bullets))
 
     def _check_events(self):
         """Continually watch for events"""
