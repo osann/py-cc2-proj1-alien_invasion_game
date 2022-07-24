@@ -7,6 +7,7 @@ import pygame
 
 from settings import Settings
 from ship import Ship
+from bullet import Bullet
 
 
 class AlienInvasion:
@@ -22,8 +23,8 @@ class AlienInvasion:
         # Init game window with fullscreen/windowed
         if self.settings.fullscreen_mode:
             self.window = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-            self.settings = self.window.get_rect().width
-            self.settings = self.window.get_rect().height
+            self.settings.window_width = self.window.get_rect().width
+            self.settings.window_height = self.window.get_rect().height
         else:
             self.window = pygame.display.set_mode(
                 (self.settings.window_width, self.settings.window_height))
@@ -31,13 +32,16 @@ class AlienInvasion:
         pygame.display.set_caption("Alien Invasion: Side Scroller")
 
         self.ship = Ship(self)
+        self.bullets = pygame.sprite.Group()
 
     def run(self):
         """Begin running game loop"""
         while True:
             self._check_events()
-            self._update_screen()
             self.ship.update()
+            self.bullets.update()
+
+            self._update_screen()
 
     def _check_events(self):
         """Continually watch for events"""
@@ -57,6 +61,8 @@ class AlienInvasion:
         # Other keys
         if event.key == pygame.K_ESCAPE:
             sys.exit()
+        if event.key == pygame.K_SPACE:
+            self._fire_bullet()
 
         # Movement keys
         if event.key == pygame.K_w:
@@ -85,8 +91,16 @@ class AlienInvasion:
         self.window.fill(self.settings.bg_colour)
         self.ship.blitme()
 
+        for bullet in self.bullets.sprites():
+            bullet.draw_bullet()
+
         # Draw screen
         pygame.display.flip()
+
+    def _fire_bullet(self):
+        """Fire bullet object from ship"""
+        bullet = Bullet(self)
+        self.bullets.add(bullet)
 
 
 if __name__ == "__main__":

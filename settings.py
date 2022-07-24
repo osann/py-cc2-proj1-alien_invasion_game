@@ -20,4 +20,10 @@ class Settings:
         self.fullscreen_mode = False    # Receive strange int class errors when True
 
         # Ship settings
-        self.ship_speed = 1.5
+        self.ship_speed = 1
+
+        # Bullet settings
+        self.bullet_speed = 0.75
+        self.bullet_width = 15
+        self.bullet_height = 3
+        self.bullet_colour = (224, 71, 255)
