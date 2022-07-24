@@ -38,12 +38,13 @@ class AlienInvasion:
         """Begin running game loop"""
         while True:
             self._check_events()
-            self.ship.update()
             self._update_bullets()
+            self.ship.update()
 
             self._update_screen()
 
     def _update_bullets(self):
+        """Updates bullets in game, and removes bullets that are off-screen"""
         self.bullets.update()
         for bullet in self.bullets.copy():
             if bullet.x > self.settings.window_width:

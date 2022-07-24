@@ -19,7 +19,7 @@ class Bullet(Sprite):
         self.rect = pygame.Rect(0, 0, self.settings.bullet_width, self.settings.bullet_height)
         self.rect.midright = ai_game.ship.hitbox.midright
 
-        self.x = float(self.rect.y)
+        self.x = float(self.rect.x)
 
     def update(self):
         """Updates objects of Bullet to move"""

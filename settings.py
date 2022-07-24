@@ -11,8 +11,8 @@ class Settings:
     def __init__(self):
         """Init game settings"""
         # Window settings
-        self.window_width = 1200
-        self.window_height = 800
+        self.window_width = 1920
+        self.window_height = 1080
         self.bg_colour = (176, 229, 233)
 
         # Mode settings
