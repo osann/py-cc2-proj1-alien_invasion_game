@@ -16,8 +16,8 @@ class Settings:
         self.bg_colour = (176, 229, 233)
 
         # Mode settings
-        self.debug_mode = False
-        self.fullscreen_mode = False    # Receive strange int class errors when True
+        self.debug_mode = True
+        self.fullscreen_mode = False
 
         # Ship settings
         self.ship_speed = 1

@@ -8,6 +8,7 @@ import pygame
 from settings import Settings
 from ship import Ship
 from bullet import Bullet
+from star import Star
 
 
 class AlienInvasion:
@@ -21,7 +22,7 @@ class AlienInvasion:
         self.settings = Settings()
 
         # Init game window with fullscreen/windowed
-        if self.settings.fullscreen_mode:
+        if not self.settings.fullscreen_mode:
             self.window = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
             self.settings.window_width = self.window.get_rect().width
             self.settings.window_height = self.window.get_rect().height
@@ -33,6 +34,9 @@ class AlienInvasion:
 
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
+        self.stars = pygame.sprite.Group()
+
+        self._create_stars()
 
     def run(self):
         """Begin running game loop"""
@@ -99,9 +103,9 @@ class AlienInvasion:
         """Update the Pygame window"""
         self.window.fill(self.settings.bg_colour)
         self.ship.blitme()
-
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
+        self.stars.draw(self.window)
 
         # Draw screen
         pygame.display.flip()
@@ -110,6 +114,24 @@ class AlienInvasion:
         """Fire bullet object from ship"""
         bullet = Bullet(self)
         self.bullets.add(bullet)
+
+    def _create_stars(self):
+        """Handles the creation of stars"""
+        star = Star(self)
+        star_width = star.rect.width
+
+        available_space_x = (self.settings.window_width * 0.66) - 2 * star_width
+        num_spaces = int(available_space_x // (2 * star_width))
+
+        if self.settings.debug_mode:
+            print(f"{available_space_x} // (2 * {star_width}) = {num_spaces}")
+            print(f"{available_space_x} // {2 * star_width} = {num_spaces}")
+
+        for star_num in range(0, num_spaces):
+            star = Star(self)
+            star.x = self.settings.window_width - ((star_width * 2) + 2 * star_width * star_num)
+            star.rect.x = star.x
+            self.stars.add(star)
 
 
 if __name__ == "__main__":
