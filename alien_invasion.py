@@ -22,7 +22,7 @@ class AlienInvasion:
         self.settings = Settings()
 
         # Init game window with fullscreen/windowed
-        if not self.settings.fullscreen_mode:
+        if self.settings.fullscreen_mode:
             self.window = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
             self.settings.window_width = self.window.get_rect().width
             self.settings.window_height = self.window.get_rect().height
@@ -128,10 +128,14 @@ class AlienInvasion:
             print(f"{available_space_x} // {2 * star_width} = {num_spaces}")
 
         for star_num in range(0, num_spaces):
-            star = Star(self)
-            star.x = self.settings.window_width - ((star_width * 2) + 2 * star_width * star_num)
-            star.rect.x = star.x
-            self.stars.add(star)
+            self._create_star(star_num)
+
+    def _create_star(self, star_num):
+        star = Star(self)
+        star_width = star.rect.width
+        star.x = self.settings.window_width - ((star_width * 2) + 2 * star_width * star_num)
+        star.rect.x = star.x
+        self.stars.add(star)
 
 
 if __name__ == "__main__":
