@@ -4,6 +4,7 @@ By JH.osan
 """
 import sys
 import pygame
+from random import randint
 
 from settings import Settings
 from ship import Ship
@@ -118,23 +119,34 @@ class AlienInvasion:
     def _create_stars(self):
         """Handles the creation of stars"""
         star = Star(self)
-        star_width = star.rect.width
+        star_width, star_height = star.rect.size
 
         available_space_x = (self.settings.window_width * 0.66) - 2 * star_width
         num_spaces = int(available_space_x // (2 * star_width))
 
+        available_space_y = self.settings.window_height - (2 * star_height)
+        num_spaces_y = int(available_space_y // (2 * star_height))
+
         if self.settings.debug_mode:
             print(f"{available_space_x} // (2 * {star_width}) = {num_spaces}")
             print(f"{available_space_x} // {2 * star_width} = {num_spaces}")
+            print(f"{available_space_y} // (2 * {star_height}) = {num_spaces_y}")
+            print(f"{available_space_y} // {2 * star_height} = {num_spaces_y}")
 
-        for star_num in range(0, num_spaces):
-            self._create_star(star_num)
+        for num_spaces_y in range(0, num_spaces_y):
 
-    def _create_star(self, star_num):
+            for star_num in range(0, num_spaces):
+                self._create_star(star_num, num_spaces_y)
+
+    def _create_star(self, star_num, num_spaces_y):
         star = Star(self)
-        star_width = star.rect.width
-        star.x = self.settings.window_width - ((star_width * 2) + 2 * star_width * star_num)
-        star.rect.x = star.x
+        star_width, star_height = star.rect.size
+        star.rect.x = self.settings.window_width - ((star_width * 2) + 3 * star_width * star_num)
+        star.rect.y = (2 * star_height) + 2 * star.rect.height * num_spaces_y
+
+        star.rect.x = star.rect.x + (randint(-50, 50))
+        star.rect.y = star.rect.y + (randint(-50, 50))
+
         self.stars.add(star)
 
 
