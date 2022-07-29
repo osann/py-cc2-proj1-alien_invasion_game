@@ -33,3 +33,4 @@ class Settings:
         self.rain_colour = (0, 182, 207)
         self.rain_width = 5
         self.rain_height = 10
+        self.raindrops_limit = 100

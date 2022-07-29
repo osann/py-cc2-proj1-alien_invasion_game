@@ -3,15 +3,15 @@ Project I from Python Crash Course
 By JH.osan
 """
 import sys
-import pygame
 from random import randint
-from time import sleep
 
+import pygame
+
+from bullet import Bullet
+from rain import Rain
 from settings import Settings
 from ship import Ship
-from bullet import Bullet
 from star import Star
-from rain import Rain
 
 
 class AlienInvasion:
@@ -155,7 +155,7 @@ class AlienInvasion:
 
     def _create_rain(self):
         """Creates rain effect"""
-        if len(self.rain) <= 250:
+        if len(self.rain) <= self.settings.raindrops_limit - 1:
             self._create_raindrop()
 
     def _create_raindrop(self):
