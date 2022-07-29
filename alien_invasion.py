@@ -5,11 +5,13 @@ By JH.osan
 import sys
 import pygame
 from random import randint
+from time import sleep
 
 from settings import Settings
 from ship import Ship
 from bullet import Bullet
 from star import Star
+from rain import Rain
 
 
 class AlienInvasion:
@@ -36,6 +38,7 @@ class AlienInvasion:
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
         self.stars = pygame.sprite.Group()
+        self.rain = pygame.sprite.Group()
 
         self._create_stars()
 
@@ -43,6 +46,8 @@ class AlienInvasion:
         """Begin running game loop"""
         while True:
             self._check_events()
+            self._create_rain()
+            self._update_rain()
             self._update_bullets()
             self.ship.update()
 
@@ -56,6 +61,15 @@ class AlienInvasion:
                 self.bullets.remove(bullet)
         if self.settings.debug_mode:
             print(len(self.bullets))
+
+    def _update_rain(self):
+        """Updates raindrops in game, removing drops that are no longer visible"""
+        self.rain.update()
+        for raindrop in self.rain.copy():
+            if raindrop.y > self.settings.window_height:
+                self.rain.remove(raindrop)
+        if self.settings.debug_mode:
+            print(f"raindrops: {len(self.rain)}")
 
     def _check_events(self):
         """Continually watch for events"""
@@ -107,6 +121,8 @@ class AlienInvasion:
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
         self.stars.draw(self.window)
+        for raindrop in self.rain.sprites():
+            raindrop.draw_rain()
 
         # Draw screen
         pygame.display.flip()
@@ -134,9 +150,20 @@ class AlienInvasion:
             print(f"{available_space_y} // {2 * star_height} = {num_spaces_y}")
 
         for num_spaces_y in range(0, num_spaces_y):
-
             for star_num in range(0, num_spaces):
                 self._create_star(star_num, num_spaces_y)
+
+    def _create_rain(self):
+        """Creates rain effect"""
+        if len(self.rain) <= 250:
+            self._create_raindrop()
+
+    def _create_raindrop(self):
+        """Creates the raindrop"""
+        raindrop = Rain(self)
+        raindrop.rect.x = raindrop.x
+        raindrop.y = randint(0, self.settings.window_height) - self.settings.window_height
+        self.rain.add(raindrop)
 
     def _create_star(self, star_num, num_spaces_y):
         star = Star(self)
