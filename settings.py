@@ -23,7 +23,14 @@ class Settings:
         self.ship_speed = 1
 
         # Bullet settings
-        self.bullet_speed = 0.75
+        self.bullet_speed = 1
         self.bullet_width = 15
         self.bullet_height = 3
         self.bullet_colour = (224, 71, 255)
+
+        # Rain settings
+        self.rain_speed = 1
+        self.rain_colour = (0, 182, 207)
+        self.rain_width = 5
+        self.rain_height = 10
+        self.raindrops_limit = 100
