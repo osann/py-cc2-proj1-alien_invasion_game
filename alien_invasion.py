@@ -11,7 +11,7 @@ from bullet import Bullet
 from rain import Rain
 from settings import Settings
 from ship import Ship
-from star import Star
+from alien import Alien
 
 
 class AlienInvasion:
@@ -32,45 +32,47 @@ class AlienInvasion:
         else:
             self.window = pygame.display.set_mode(
                 (self.settings.window_width, self.settings.window_height))
-
         pygame.display.set_caption("Alien Invasion: Side Scroller")
 
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
-        self.stars = pygame.sprite.Group()
+        self.aliens = pygame.sprite.Group()
         self.rain = pygame.sprite.Group()
 
-        self._create_stars()
+        self._spawn_alien()
 
+    # -------------------- Game loop
     def run(self):
         """Begin running game loop"""
         while True:
             self._check_events()
+
             self._create_rain()
             self._update_rain()
+
+            self._spawn_alien_loop()
+            self._update_aliens()
+
             self._update_bullets()
             self.ship.update()
 
             self._update_screen()
 
-    def _update_bullets(self):
-        """Updates bullets in game, and removes bullets that are off-screen"""
-        self.bullets.update()
-        for bullet in self.bullets.copy():
-            if bullet.x > self.settings.window_width:
-                self.bullets.remove(bullet)
-        if self.settings.debug_mode:
-            print(len(self.bullets))
+    # -------------------- Update handlers
+    def _update_screen(self):
+        """Update the Pygame window"""
+        self.window.fill(self.settings.bg_colour)
+        self.ship.blitme()
+        for bullet in self.bullets.sprites():
+            bullet.draw_bullet()
+        self.aliens.draw(self.window)
+        for raindrop in self.rain.sprites():
+            raindrop.draw_rain()
 
-    def _update_rain(self):
-        """Updates raindrops in game, removing drops that are no longer visible"""
-        self.rain.update()
-        for raindrop in self.rain.copy():
-            if raindrop.y > self.settings.window_height:
-                self.rain.remove(raindrop)
-        if self.settings.debug_mode:
-            print(f"raindrops: {len(self.rain)}")
+        # Draw screen
+        pygame.display.flip()
 
+    # -------------------- Event handlers
     def _check_events(self):
         """Continually watch for events"""
         for event in pygame.event.get():
@@ -114,44 +116,49 @@ class AlienInvasion:
         if event.key == pygame.K_d:
             self.ship.moving_right = False
 
-    def _update_screen(self):
-        """Update the Pygame window"""
-        self.window.fill(self.settings.bg_colour)
-        self.ship.blitme()
-        for bullet in self.bullets.sprites():
-            bullet.draw_bullet()
-        self.stars.draw(self.window)
-        for raindrop in self.rain.sprites():
-            raindrop.draw_rain()
-
-        # Draw screen
-        pygame.display.flip()
-
+    # -------------------- Ship functions
     def _fire_bullet(self):
         """Fire bullet object from ship"""
         bullet = Bullet(self)
         self.bullets.add(bullet)
 
-    def _create_stars(self):
-        """Handles the creation of stars"""
-        star = Star(self)
-        star_width, star_height = star.rect.size
-
-        available_space_x = (self.settings.window_width * 0.66) - 2 * star_width
-        num_spaces = int(available_space_x // (2 * star_width))
-
-        available_space_y = self.settings.window_height - (2 * star_height)
-        num_spaces_y = int(available_space_y // (2 * star_height))
-
+    def _update_bullets(self):
+        """Updates bullets in game, and removes bullets that are off-screen"""
+        self.bullets.update()
+        for bullet in self.bullets.copy():
+            if bullet.x > self.settings.window_width:
+                self.bullets.remove(bullet)
         if self.settings.debug_mode:
-            print(f"{available_space_x} // (2 * {star_width}) = {num_spaces}")
-            print(f"{available_space_x} // {2 * star_width} = {num_spaces}")
-            print(f"{available_space_y} // (2 * {star_height}) = {num_spaces_y}")
-            print(f"{available_space_y} // {2 * star_height} = {num_spaces_y}")
+            print(f"No. Bullets: {len(self.bullets)}")
 
-        for num_spaces_y in range(0, num_spaces_y):
-            for star_num in range(0, num_spaces):
-                self._create_star(star_num, num_spaces_y)
+    # -------------------- Alien functions
+    def _spawn_alien(self):
+        """Spawns aliens on the screen"""
+        alien = Alien(self)
+        self.aliens.add(alien)
+
+    def _spawn_alien_loop(self):
+        """Spawns aliens constantly"""
+        if len(self.aliens) <= self.settings.aliens_limit:
+            self._spawn_alien()
+
+    def _update_aliens(self):
+        self.aliens.update()
+        for alien in self.aliens.copy():
+            if alien.x <= 0 - alien.rect.width:
+                self.aliens.remove(alien)
+        if self.settings.debug_mode:
+            print(f"No. Aliens: {len(self.aliens)}")
+
+    # -------------------- Rain functions
+    def _update_rain(self):
+        """Updates raindrops in game, removing drops that are no longer visible"""
+        self.rain.update()
+        for raindrop in self.rain.copy():
+            if raindrop.y > self.settings.window_height:
+                self.rain.remove(raindrop)
+        if self.settings.debug_mode:
+            print(f"raindrops: {len(self.rain)}")
 
     def _create_rain(self):
         """Creates rain effect"""
@@ -165,18 +172,10 @@ class AlienInvasion:
         raindrop.y = randint(0, self.settings.window_height) - self.settings.window_height
         self.rain.add(raindrop)
 
-    def _create_star(self, star_num, num_spaces_y):
-        star = Star(self)
-        star_width, star_height = star.rect.size
-        star.rect.x = self.settings.window_width - ((star_width * 2) + 3 * star_width * star_num)
-        star.rect.y = (2 * star_height) + 2 * star.rect.height * num_spaces_y
-
-        star.rect.x = star.rect.x + (randint(-50, 50))
-        star.rect.y = star.rect.y + (randint(-50, 50))
-
-        self.stars.add(star)
+    # -------------------- End class AlienInvasion
 
 
+# -------------------- Run game
 if __name__ == "__main__":
     instance = AlienInvasion()
     instance.run()

@@ -28,6 +28,10 @@ class Settings:
         self.bullet_height = 3
         self.bullet_colour = (224, 71, 255)
 
+        # Alien settings
+        self.alien_x_speed = 0.5
+        self.aliens_limit = 5
+
         # Rain settings
         self.rain_speed = 1
         self.rain_colour = (0, 182, 207)
