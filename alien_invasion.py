@@ -11,6 +11,7 @@ from bullet import Bullet
 from rain import Rain
 from settings import Settings
 from ship import Ship
+from alien import Alien
 
 
 class AlienInvasion:
@@ -35,15 +36,23 @@ class AlienInvasion:
 
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
+        self.aliens = pygame.sprite.Group()
         self.rain = pygame.sprite.Group()
+
+        self._spawn_alien()
 
     # -------------------- Game loop
     def run(self):
         """Begin running game loop"""
         while True:
             self._check_events()
+
             self._create_rain()
             self._update_rain()
+
+            self._spawn_alien_loop()
+            self._update_aliens()
+
             self._update_bullets()
             self.ship.update()
 
@@ -56,6 +65,7 @@ class AlienInvasion:
         self.ship.blitme()
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
+        self.aliens.draw(self.window)
         for raindrop in self.rain.sprites():
             raindrop.draw_rain()
 
@@ -119,7 +129,26 @@ class AlienInvasion:
             if bullet.x > self.settings.window_width:
                 self.bullets.remove(bullet)
         if self.settings.debug_mode:
-            print(len(self.bullets))
+            print(f"No. Bullets: {len(self.bullets)}")
+
+    # -------------------- Alien functions
+    def _spawn_alien(self):
+        """Spawns aliens on the screen"""
+        alien = Alien(self)
+        self.aliens.add(alien)
+
+    def _spawn_alien_loop(self):
+        """Spawns aliens constantly"""
+        if len(self.aliens) <= self.settings.aliens_limit:
+            self._spawn_alien()
+
+    def _update_aliens(self):
+        self.aliens.update()
+        for alien in self.aliens.copy():
+            if alien.x <= 0 - alien.rect.width:
+                self.aliens.remove(alien)
+        if self.settings.debug_mode:
+            print(f"No. Aliens: {len(self.aliens)}")
 
     # -------------------- Rain functions
     def _update_rain(self):
