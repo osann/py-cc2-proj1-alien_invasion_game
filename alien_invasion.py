@@ -31,13 +31,13 @@ class AlienInvasion:
         else:
             self.window = pygame.display.set_mode(
                 (self.settings.window_width, self.settings.window_height))
-
         pygame.display.set_caption("Alien Invasion: Side Scroller")
 
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
         self.rain = pygame.sprite.Group()
 
+    # -------------------- Game loop
     def run(self):
         """Begin running game loop"""
         while True:
@@ -49,24 +49,20 @@ class AlienInvasion:
 
             self._update_screen()
 
-    def _update_bullets(self):
-        """Updates bullets in game, and removes bullets that are off-screen"""
-        self.bullets.update()
-        for bullet in self.bullets.copy():
-            if bullet.x > self.settings.window_width:
-                self.bullets.remove(bullet)
-        if self.settings.debug_mode:
-            print(len(self.bullets))
+    # -------------------- Update handlers
+    def _update_screen(self):
+        """Update the Pygame window"""
+        self.window.fill(self.settings.bg_colour)
+        self.ship.blitme()
+        for bullet in self.bullets.sprites():
+            bullet.draw_bullet()
+        for raindrop in self.rain.sprites():
+            raindrop.draw_rain()
 
-    def _update_rain(self):
-        """Updates raindrops in game, removing drops that are no longer visible"""
-        self.rain.update()
-        for raindrop in self.rain.copy():
-            if raindrop.y > self.settings.window_height:
-                self.rain.remove(raindrop)
-        if self.settings.debug_mode:
-            print(f"raindrops: {len(self.rain)}")
+        # Draw screen
+        pygame.display.flip()
 
+    # -------------------- Event handlers
     def _check_events(self):
         """Continually watch for events"""
         for event in pygame.event.get():
@@ -110,22 +106,30 @@ class AlienInvasion:
         if event.key == pygame.K_d:
             self.ship.moving_right = False
 
-    def _update_screen(self):
-        """Update the Pygame window"""
-        self.window.fill(self.settings.bg_colour)
-        self.ship.blitme()
-        for bullet in self.bullets.sprites():
-            bullet.draw_bullet()
-        for raindrop in self.rain.sprites():
-            raindrop.draw_rain()
-
-        # Draw screen
-        pygame.display.flip()
-
+    # -------------------- Ship functions
     def _fire_bullet(self):
         """Fire bullet object from ship"""
         bullet = Bullet(self)
         self.bullets.add(bullet)
+
+    def _update_bullets(self):
+        """Updates bullets in game, and removes bullets that are off-screen"""
+        self.bullets.update()
+        for bullet in self.bullets.copy():
+            if bullet.x > self.settings.window_width:
+                self.bullets.remove(bullet)
+        if self.settings.debug_mode:
+            print(len(self.bullets))
+
+    # -------------------- Rain functions
+    def _update_rain(self):
+        """Updates raindrops in game, removing drops that are no longer visible"""
+        self.rain.update()
+        for raindrop in self.rain.copy():
+            if raindrop.y > self.settings.window_height:
+                self.rain.remove(raindrop)
+        if self.settings.debug_mode:
+            print(f"raindrops: {len(self.rain)}")
 
     def _create_rain(self):
         """Creates rain effect"""
@@ -139,7 +143,10 @@ class AlienInvasion:
         raindrop.y = randint(0, self.settings.window_height) - self.settings.window_height
         self.rain.add(raindrop)
 
+    # -------------------- End class AlienInvasion
 
+
+# -------------------- Run game
 if __name__ == "__main__":
     instance = AlienInvasion()
     instance.run()

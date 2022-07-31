@@ -32,6 +32,7 @@ class Ship:
         self.moving_right = False
 
     def update(self):
+        """Moves the ship"""
         if self.moving_up and self.hitbox.top > 0:
             self.y_pos -= self.settings.ship_speed
         if self.moving_down and self.hitbox.bottom < self.window_size.bottom:
