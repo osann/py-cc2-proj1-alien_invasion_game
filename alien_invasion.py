@@ -11,7 +11,6 @@ from bullet import Bullet
 from rain import Rain
 from settings import Settings
 from ship import Ship
-from star import Star
 
 
 class AlienInvasion:
@@ -37,10 +36,7 @@ class AlienInvasion:
 
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
-        self.stars = pygame.sprite.Group()
         self.rain = pygame.sprite.Group()
-
-        self._create_stars()
 
     def run(self):
         """Begin running game loop"""
@@ -120,7 +116,6 @@ class AlienInvasion:
         self.ship.blitme()
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
-        self.stars.draw(self.window)
         for raindrop in self.rain.sprites():
             raindrop.draw_rain()
 
@@ -131,27 +126,6 @@ class AlienInvasion:
         """Fire bullet object from ship"""
         bullet = Bullet(self)
         self.bullets.add(bullet)
-
-    def _create_stars(self):
-        """Handles the creation of stars"""
-        star = Star(self)
-        star_width, star_height = star.rect.size
-
-        available_space_x = (self.settings.window_width * 0.66) - 2 * star_width
-        num_spaces = int(available_space_x // (2 * star_width))
-
-        available_space_y = self.settings.window_height - (2 * star_height)
-        num_spaces_y = int(available_space_y // (2 * star_height))
-
-        if self.settings.debug_mode:
-            print(f"{available_space_x} // (2 * {star_width}) = {num_spaces}")
-            print(f"{available_space_x} // {2 * star_width} = {num_spaces}")
-            print(f"{available_space_y} // (2 * {star_height}) = {num_spaces_y}")
-            print(f"{available_space_y} // {2 * star_height} = {num_spaces_y}")
-
-        for num_spaces_y in range(0, num_spaces_y):
-            for star_num in range(0, num_spaces):
-                self._create_star(star_num, num_spaces_y)
 
     def _create_rain(self):
         """Creates rain effect"""
@@ -164,17 +138,6 @@ class AlienInvasion:
         raindrop.rect.x = raindrop.x
         raindrop.y = randint(0, self.settings.window_height) - self.settings.window_height
         self.rain.add(raindrop)
-
-    def _create_star(self, star_num, num_spaces_y):
-        star = Star(self)
-        star_width, star_height = star.rect.size
-        star.rect.x = self.settings.window_width - ((star_width * 2) + 3 * star_width * star_num)
-        star.rect.y = (2 * star_height) + 2 * star.rect.height * num_spaces_y
-
-        star.rect.x = star.rect.x + (randint(-50, 50))
-        star.rect.y = star.rect.y + (randint(-50, 50))
-
-        self.stars.add(star)
 
 
 if __name__ == "__main__":
