@@ -128,16 +128,19 @@ class AlienInvasion:
             if bullet.x > self.settings.window_width:
                 self.bullets.remove(bullet)
 
-        collisions = pygame.sprite.groupcollide(
-            self.bullets, self.alien_factory.aliens, True, True
-        )
-
-        if not self.alien_factory.aliens:
-            self.bullets.empty()
-            self.alien_factory.build_wave()
+        self._check_bullet_collisions()
 
         if self.settings.debug_mode:
             print(f"no. bullets: {len(self.bullets)}")
+
+    def _check_bullet_collisions(self):
+        """Checks for collisions between aliens and bullets, builds new wave if no aliens"""
+        collisions = pygame.sprite.groupcollide(
+            self.bullets, self.alien_factory.aliens, True, True
+        )
+        if not self.alien_factory.aliens:
+            self.bullets.empty()
+            self.alien_factory.build_wave()
 
     # -------------------- Rain functions
     def _update_rain(self):
