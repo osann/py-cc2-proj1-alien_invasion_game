@@ -8,7 +8,7 @@ from random import randint
 
 
 class Alien(Sprite):
-    """A class managing alien targets"""
+    """A class managing individual aliens"""
 
     def __init__(self, x_placement, y_placement, speed):
         """Init alien object"""
@@ -55,8 +55,8 @@ class AlienFactory:
     def generate_slots(self):
         """Calculates how many slots and where they are"""
         num_of_slots = int(self.settings.window_height / self.ghost_alien.rect.height)
-        for i in range(2, num_of_slots - 1):
-            self.slots[f"slot:{i-1}"] = i * self.ghost_alien.rect.height
+        for i in range(1, num_of_slots - 1):
+            self.slots[f"slot:{i}"] = i * self.ghost_alien.rect.height
         if self.settings.debug_mode:
             print(self.slots)
 
@@ -69,6 +69,7 @@ class AlienFactory:
             print(f"new_alien_placement: {alien.y}")
 
     def update_aliens(self):
+        """Updates alien movement, and removes aliens off-screen"""
         for alien in self.aliens:
             alien.update()
 

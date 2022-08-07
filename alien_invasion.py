@@ -11,7 +11,7 @@ from bullet import Bullet
 from rain import Rain
 from settings import Settings
 from ship import Ship
-from alien import Alien, AlienFactory
+from alien import AlienFactory
 
 
 class AlienInvasion:
@@ -128,7 +128,7 @@ class AlienInvasion:
             if bullet.x > self.settings.window_width:
                 self.bullets.remove(bullet)
         if self.settings.debug_mode:
-            print(f"No. Bullets: {len(self.bullets)}")
+            print(f"no. bullets: {len(self.bullets)}")
 
     # -------------------- Rain functions
     def _update_rain(self):
