@@ -17,7 +17,7 @@ class Bullet(Sprite):
         self.colour = self.settings.bullet_colour
 
         self.rect = pygame.Rect(0, 0, self.settings.bullet_width, self.settings.bullet_height)
-        self.rect.midright = ai_game.ship.hitbox.midright
+        self.rect.midright = ai_game.ship.rect.midright
 
         self.x = float(self.rect.x)
 
@@ -29,3 +29,5 @@ class Bullet(Sprite):
     def draw_bullet(self):
         """Draws object to screen"""
         pygame.draw.rect(self.screen, self.colour, self.rect)
+
+    # -------------------- End class Bullet

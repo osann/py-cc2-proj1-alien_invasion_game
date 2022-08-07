@@ -38,3 +38,5 @@ class Settings:
         self.rain_width = 5
         self.rain_height = 10
         self.raindrops_limit = 100
+
+    # -------------------- End class Settings

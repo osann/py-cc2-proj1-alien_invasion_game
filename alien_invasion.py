@@ -11,7 +11,7 @@ from bullet import Bullet
 from rain import Rain
 from settings import Settings
 from ship import Ship
-from alien import Alien
+from alien import AlienFactory
 
 
 class AlienInvasion:
@@ -36,10 +36,10 @@ class AlienInvasion:
 
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
-        self.aliens = pygame.sprite.Group()
         self.rain = pygame.sprite.Group()
 
-        self._spawn_alien()
+        self.alien_factory = AlienFactory(self)
+        self.alien_factory.build_wave()
 
     # -------------------- Game loop
     def run(self):
@@ -50,7 +50,6 @@ class AlienInvasion:
             self._create_rain()
             self._update_rain()
 
-            self._spawn_alien_loop()
             self._update_aliens()
 
             self._update_bullets()
@@ -65,7 +64,7 @@ class AlienInvasion:
         self.ship.blitme()
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
-        self.aliens.draw(self.window)
+        self.alien_factory.aliens.draw(self.window)
         for raindrop in self.rain.sprites():
             raindrop.draw_rain()
 
@@ -128,27 +127,36 @@ class AlienInvasion:
         for bullet in self.bullets.copy():
             if bullet.x > self.settings.window_width:
                 self.bullets.remove(bullet)
+
+        self._check_bullet_collisions()
+
         if self.settings.debug_mode:
-            print(f"No. Bullets: {len(self.bullets)}")
+            print(f"no. bullets: {len(self.bullets)}")
+
+    def _check_bullet_collisions(self):
+        """Checks for collisions between aliens and bullets, builds new wave if no aliens"""
+        collisions = pygame.sprite.groupcollide(
+            self.bullets, self.alien_factory.aliens, True, True
+        )
+        if not self.alien_factory.aliens:
+            self.bullets.empty()
+            self.alien_factory.build_wave()
 
     # -------------------- Alien functions
-    def _spawn_alien(self):
-        """Spawns aliens on the screen"""
-        alien = Alien(self)
-        self.aliens.add(alien)
-
-    def _spawn_alien_loop(self):
-        """Spawns aliens constantly"""
-        if len(self.aliens) <= self.settings.aliens_limit:
-            self._spawn_alien()
-
     def _update_aliens(self):
-        self.aliens.update()
-        for alien in self.aliens.copy():
+        """Updates alien movement, and removes aliens off-screen"""
+        for alien in self.alien_factory.aliens:
+            alien.update()
+
+        if pygame.sprite.spritecollideany(self.ship, self.alien_factory.aliens):
+            print("Ship hit!")
+
+        for alien in self.alien_factory.aliens.copy():
             if alien.x <= 0 - alien.rect.width:
-                self.aliens.remove(alien)
+                self.alien_factory.aliens.remove(alien)
+
         if self.settings.debug_mode:
-            print(f"No. Aliens: {len(self.aliens)}")
+            print(f"no. aliens: {len(self.alien_factory.aliens)}")
 
     # -------------------- Rain functions
     def _update_rain(self):

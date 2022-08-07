@@ -16,14 +16,14 @@ class Ship:
         self.window_size = ai_game.window.get_rect()
 
         self.image = pygame.image.load('images/rocket.bmp')  # Load ship and calculate hitbox
-        self.hitbox = self.image.get_rect()
+        self.rect = self.image.get_rect()
 
-        self.hitbox.midleft = self.window_size.midleft  # Place ship on the middle left of the window
+        self.rect.midleft = self.window_size.midleft  # Place ship on the middle left of the window
 
         # Ship settings
         self.settings = ai_game.settings
-        self.y_pos = float(self.hitbox.y)
-        self.x_pos = float(self.hitbox.x)
+        self.y_pos = float(self.rect.y)
+        self.x_pos = float(self.rect.x)
 
         # Movement flags
         self.moving_up = False
@@ -33,19 +33,21 @@ class Ship:
 
     def update(self):
         """Moves the ship"""
-        if self.moving_up and self.hitbox.top > 0:
+        if self.moving_up and self.rect.top > 0:
             self.y_pos -= self.settings.ship_speed
-        if self.moving_down and self.hitbox.bottom < self.window_size.bottom:
+        if self.moving_down and self.rect.bottom < self.window_size.bottom:
             self.y_pos += self.settings.ship_speed
-        if self.moving_left and self.hitbox.left > 0:
+        if self.moving_left and self.rect.left > 0:
             self.x_pos -= self.settings.ship_speed
-        if self.moving_right and self.hitbox.centerx < (self.window_size.right / 3):
+        if self.moving_right and self.rect.centerx < (self.window_size.right / 3):
             # Limit player to first third of the screen
             self.x_pos += self.settings.ship_speed
 
-        self.hitbox.y = self.y_pos
-        self.hitbox.x = self.x_pos
+        self.rect.y = self.y_pos
+        self.rect.x = self.x_pos
 
     def blitme(self):
         """Draw ship"""
-        self.window.blit(self.image, self.hitbox)
+        self.window.blit(self.image, self.rect)
+
+    # -------------------- End class Ship
