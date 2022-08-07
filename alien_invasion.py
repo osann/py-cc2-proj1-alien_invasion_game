@@ -50,7 +50,7 @@ class AlienInvasion:
             self._create_rain()
             self._update_rain()
 
-            self.alien_factory.update_aliens()
+            self._update_aliens()
 
             self._update_bullets()
             self.ship.update()
@@ -141,6 +141,22 @@ class AlienInvasion:
         if not self.alien_factory.aliens:
             self.bullets.empty()
             self.alien_factory.build_wave()
+
+    # -------------------- Alien functions
+    def _update_aliens(self):
+        """Updates alien movement, and removes aliens off-screen"""
+        for alien in self.alien_factory.aliens:
+            alien.update()
+
+        if pygame.sprite.spritecollideany(self.ship, self.alien_factory.aliens):
+            print("Ship hit!")
+
+        for alien in self.alien_factory.aliens.copy():
+            if alien.x <= 0 - alien.rect.width:
+                self.alien_factory.aliens.remove(alien)
+
+        if self.settings.debug_mode:
+            print(f"no. aliens: {len(self.alien_factory.aliens)}")
 
     # -------------------- Rain functions
     def _update_rain(self):

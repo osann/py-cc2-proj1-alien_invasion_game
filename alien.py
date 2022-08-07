@@ -28,6 +28,8 @@ class Alien(Sprite):
         self.x -= self.speed
         self.rect.x = self.x
 
+    # -------------------- End class Alien
+
 
 class AlienFactory:
     """A class to handle building alien waves"""
@@ -68,13 +70,4 @@ class AlienFactory:
         if self.settings.debug_mode:
             print(f"new_alien_placement: {alien.y}")
 
-    def update_aliens(self):
-        """Updates alien movement, and removes aliens off-screen"""
-        for alien in self.aliens:
-            alien.update()
-
-        for alien in self.aliens.copy():
-            if alien.x <= 0 - alien.rect.width:
-                self.aliens.remove(alien)
-        if self.settings.debug_mode:
-            print(f"no. aliens: {len(self.aliens)}")
+    # -------------------- End class AlienFactory
