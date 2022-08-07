@@ -36,7 +36,6 @@ class AlienFactory:
         """Init factory with dicts, lists, etc"""
         self.settings = ai_game.settings
         self.slots = {}
-        self.slots_used = []
         self.aliens = pygame.sprite.Group()
 
         self.ghost_alien = Alien(0, 0, 0)
@@ -44,11 +43,12 @@ class AlienFactory:
 
     def build_wave(self):
         """Generates a wave of aliens"""
+        slots_used = []
         for i in range(0, self.settings.aliens_limit):
             proposed_slot = randint(1, len(self.slots))
-            while proposed_slot in self.slots_used:
+            while proposed_slot in slots_used:
                 proposed_slot = randint(1, len(self.slots))
-            self.slots_used.append(proposed_slot)
+            slots_used.append(proposed_slot)
 
             self.build_alien(proposed_slot)
 

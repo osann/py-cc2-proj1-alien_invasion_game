@@ -127,6 +127,15 @@ class AlienInvasion:
         for bullet in self.bullets.copy():
             if bullet.x > self.settings.window_width:
                 self.bullets.remove(bullet)
+
+        collisions = pygame.sprite.groupcollide(
+            self.bullets, self.alien_factory.aliens, True, True
+        )
+
+        if not self.alien_factory.aliens:
+            self.bullets.empty()
+            self.alien_factory.build_wave()
+
         if self.settings.debug_mode:
             print(f"no. bullets: {len(self.bullets)}")
 
