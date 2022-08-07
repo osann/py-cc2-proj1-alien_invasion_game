@@ -10,24 +10,22 @@ from random import randint
 class Alien(Sprite):
     """A class managing alien targets"""
 
-    def __init__(self, x_placement, y_placement):
+    def __init__(self, x_placement, y_placement, speed):
         """Init alien object"""
         super().__init__()
-
-        self.spawn_points = []
-
         self.image = pygame.image.load('images/alien.bmp')
         self.rect = self.image.get_rect()
 
         self.rect.x = x_placement
         self.rect.y = y_placement
+        self.speed = speed
 
         self.x = float(self.rect.x)
         self.y = float(self.rect.y)
 
     def update(self):
         """Moves alien across the screen"""
-        self.x -= self.settings.alien_x_speed
+        self.x -= self.speed
         self.rect.x = self.x
 
 
@@ -41,7 +39,7 @@ class AlienFactory:
         self.slots_used = []
         self.aliens = pygame.sprite.Group()
 
-        self.ghost_alien = Alien(0, 0)
+        self.ghost_alien = Alien(0, 0, 0)
         self.generate_slots()
 
     def build_wave(self):
@@ -65,7 +63,17 @@ class AlienFactory:
     def build_alien(self, slot):
         """Builds an alien object and places it in the correct slot"""
         alien = Alien(
-            self.settings.window_width, self.slots[f"slot:{slot}"])
+            self.settings.window_width, self.slots[f"slot:{slot}"], self.settings.alien_x_speed)
         self.aliens.add(alien)
         if self.settings.debug_mode:
             print(f"new_alien_placement: {alien.y}")
+
+    def update_aliens(self):
+        for alien in self.aliens:
+            alien.update()
+
+        for alien in self.aliens.copy():
+            if alien.x <= 0 - alien.rect.width:
+                self.aliens.remove(alien)
+        if self.settings.debug_mode:
+            print(f"no. aliens: {len(self.aliens)}")
