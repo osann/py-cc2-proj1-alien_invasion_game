@@ -12,6 +12,7 @@ class Stats:
         self.lives = 0
         self.settings = ai_game.settings
         self.reset_stats()
+        self.game_active = True
 
     def reset_stats(self):
         """Reset statistics to default"""

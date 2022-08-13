@@ -54,10 +54,10 @@ class AlienInvasion:
             self._create_rain()
             self._update_rain()
 
-            self._update_aliens()
-
-            self._update_bullets()
-            self.ship.update()
+            if self.game_stats.game_active:
+                self._update_aliens()
+                self._update_bullets()
+                self.ship.update()
 
             self._update_screen()
 
@@ -134,8 +134,8 @@ class AlienInvasion:
 
         self._check_bullet_collisions()
 
-        if self.settings.debug_mode:
-            print(f"no. bullets: {len(self.bullets)}")
+        # if self.settings.debug_mode:
+        #     print(f"no. bullets: {len(self.bullets)}")
 
     def _check_bullet_collisions(self):
         """Checks for collisions between aliens and bullets, builds new wave if no aliens"""
@@ -148,7 +148,14 @@ class AlienInvasion:
 
     def _ship_hit(self):
         """Response to getting hit by an alien"""
-        self.game_stats.lives -= 1
+        if self.game_stats.lives > 1:
+            self.game_stats.lives -= 1
+
+            if self.settings.debug_mode:
+                print(f"lives: {self.game_stats.lives}")
+        else:
+            self.game_stats.game_active = False
+
         self.alien_factory.aliens.empty()
         self.bullets.empty()
         self.alien_factory.build_wave()
@@ -168,8 +175,8 @@ class AlienInvasion:
 
         self._check_aliens_reached_end()
 
-        if self.settings.debug_mode:
-            print(f"no. aliens: {len(self.alien_factory.aliens)}")
+        # if self.settings.debug_mode:
+        #     print(f"no. aliens: {len(self.alien_factory.aliens)}")
 
     def _check_aliens_reached_end(self):
         """Checks whether aliens have reached the end of the screen"""
@@ -185,8 +192,8 @@ class AlienInvasion:
         for raindrop in self.rain.copy():
             if raindrop.y > self.settings.window_height:
                 self.rain.remove(raindrop)
-        if self.settings.debug_mode:
-            print(f"raindrops: {len(self.rain)}")
+        # if self.settings.debug_mode:
+        #     print(f"raindrops: {len(self.rain)}")
 
     def _create_rain(self):
         """Creates rain effect"""
