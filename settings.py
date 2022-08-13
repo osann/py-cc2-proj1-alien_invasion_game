@@ -21,15 +21,16 @@ class Settings:
 
         # Ship settings
         self.ship_speed = 1
+        self.max_lives = 3
 
         # Bullet settings
-        self.bullet_speed = 1
-        self.bullet_width = 15
-        self.bullet_height = 3
+        self.bullet_speed = 2
+        self.bullet_width = 20
+        self.bullet_height = 5
         self.bullet_colour = (224, 71, 255)
 
         # Alien settings
-        self.alien_x_speed = 0.5
+        self.alien_x_speed = 2
         self.aliens_limit = 5
 
         # Rain settings

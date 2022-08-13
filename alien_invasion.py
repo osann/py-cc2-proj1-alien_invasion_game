@@ -4,6 +4,7 @@ By JH.osan
 """
 import sys
 from random import randint
+from time import sleep
 
 import pygame
 
@@ -12,6 +13,7 @@ from rain import Rain
 from settings import Settings
 from ship import Ship
 from alien import AlienFactory
+from game_statistics import Stats
 
 
 class AlienInvasion:
@@ -41,6 +43,8 @@ class AlienInvasion:
         self.alien_factory = AlienFactory(self)
         self.alien_factory.build_wave()
 
+        self.game_stats = Stats(self)
+
     # -------------------- Game loop
     def run(self):
         """Begin running game loop"""
@@ -50,10 +54,10 @@ class AlienInvasion:
             self._create_rain()
             self._update_rain()
 
-            self._update_aliens()
-
-            self._update_bullets()
-            self.ship.update()
+            if self.game_stats.game_active:
+                self._update_aliens()
+                self._update_bullets()
+                self.ship.update()
 
             self._update_screen()
 
@@ -130,8 +134,8 @@ class AlienInvasion:
 
         self._check_bullet_collisions()
 
-        if self.settings.debug_mode:
-            print(f"no. bullets: {len(self.bullets)}")
+        # if self.settings.debug_mode:
+        #     print(f"no. bullets: {len(self.bullets)}")
 
     def _check_bullet_collisions(self):
         """Checks for collisions between aliens and bullets, builds new wave if no aliens"""
@@ -142,6 +146,24 @@ class AlienInvasion:
             self.bullets.empty()
             self.alien_factory.build_wave()
 
+    def _ship_hit(self):
+        """Response to getting hit by an alien"""
+        if self.game_stats.lives > 1:
+            self.game_stats.lives -= 1
+
+            if self.settings.debug_mode:
+                print(f"lives: {self.game_stats.lives}")
+        else:
+            self.game_stats.game_active = False
+
+        self.alien_factory.aliens.empty()
+        self.bullets.empty()
+        self.alien_factory.build_wave()
+        self.ship.centre_ship()
+        self._update_screen()
+
+        sleep(1)
+
     # -------------------- Alien functions
     def _update_aliens(self):
         """Updates alien movement, and removes aliens off-screen"""
@@ -149,14 +171,19 @@ class AlienInvasion:
             alien.update()
 
         if pygame.sprite.spritecollideany(self.ship, self.alien_factory.aliens):
-            print("Ship hit!")
+            self._ship_hit()
 
-        for alien in self.alien_factory.aliens.copy():
-            if alien.x <= 0 - alien.rect.width:
-                self.alien_factory.aliens.remove(alien)
+        self._check_aliens_reached_end()
 
-        if self.settings.debug_mode:
-            print(f"no. aliens: {len(self.alien_factory.aliens)}")
+        # if self.settings.debug_mode:
+        #     print(f"no. aliens: {len(self.alien_factory.aliens)}")
+
+    def _check_aliens_reached_end(self):
+        """Checks whether aliens have reached the end of the screen"""
+        for alien in self.alien_factory.aliens.sprites():
+            if alien.rect.left <= 0:
+                self._ship_hit()
+                break
 
     # -------------------- Rain functions
     def _update_rain(self):
@@ -165,8 +192,8 @@ class AlienInvasion:
         for raindrop in self.rain.copy():
             if raindrop.y > self.settings.window_height:
                 self.rain.remove(raindrop)
-        if self.settings.debug_mode:
-            print(f"raindrops: {len(self.rain)}")
+        # if self.settings.debug_mode:
+        #     print(f"raindrops: {len(self.rain)}")
 
     def _create_rain(self):
         """Creates rain effect"""
