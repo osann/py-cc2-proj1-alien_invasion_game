@@ -4,6 +4,7 @@ By JH.osan
 """
 import sys
 from random import randint
+from time import sleep
 
 import pygame
 
@@ -12,6 +13,7 @@ from rain import Rain
 from settings import Settings
 from ship import Ship
 from alien import AlienFactory
+from game_statistics import Stats
 
 
 class AlienInvasion:
@@ -40,6 +42,8 @@ class AlienInvasion:
 
         self.alien_factory = AlienFactory(self)
         self.alien_factory.build_wave()
+
+        self.game_stats = Stats(self)
 
     # -------------------- Game loop
     def run(self):
@@ -142,6 +146,17 @@ class AlienInvasion:
             self.bullets.empty()
             self.alien_factory.build_wave()
 
+    def _ship_hit(self):
+        """Response to getting hit by an alien"""
+        self.game_stats.lives -= 1
+        self.alien_factory.aliens.empty()
+        self.bullets.empty()
+        self.alien_factory.build_wave()
+        self.ship.centre_ship()
+        self._update_screen()
+
+        sleep(1)
+
     # -------------------- Alien functions
     def _update_aliens(self):
         """Updates alien movement, and removes aliens off-screen"""
@@ -149,7 +164,7 @@ class AlienInvasion:
             alien.update()
 
         if pygame.sprite.spritecollideany(self.ship, self.alien_factory.aliens):
-            print("Ship hit!")
+            self._ship_hit()
 
         for alien in self.alien_factory.aliens.copy():
             if alien.x <= 0 - alien.rect.width:

@@ -18,7 +18,7 @@ class Ship:
         self.image = pygame.image.load('images/rocket.bmp')  # Load ship and calculate hitbox
         self.rect = self.image.get_rect()
 
-        self.rect.midleft = self.window_size.midleft  # Place ship on the middle left of the window
+        self.centre_ship()
 
         # Ship settings
         self.settings = ai_game.settings
@@ -49,5 +49,10 @@ class Ship:
     def blitme(self):
         """Draw ship"""
         self.window.blit(self.image, self.rect)
+
+    def centre_ship(self):
+        self.rect.midleft = self.window_size.midleft
+        self.y_pos = float(self.rect.y)
+        self.x_pos = float(self.rect.x)
 
     # -------------------- End class Ship
