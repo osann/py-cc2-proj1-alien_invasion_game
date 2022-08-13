@@ -166,12 +166,17 @@ class AlienInvasion:
         if pygame.sprite.spritecollideany(self.ship, self.alien_factory.aliens):
             self._ship_hit()
 
-        for alien in self.alien_factory.aliens.copy():
-            if alien.x <= 0 - alien.rect.width:
-                self.alien_factory.aliens.remove(alien)
+        self._check_aliens_reached_end()
 
         if self.settings.debug_mode:
             print(f"no. aliens: {len(self.alien_factory.aliens)}")
+
+    def _check_aliens_reached_end(self):
+        """Checks whether aliens have reached the end of the screen"""
+        for alien in self.alien_factory.aliens.sprites():
+            if alien.rect.left <= 0:
+                self._ship_hit()
+                break
 
     # -------------------- Rain functions
     def _update_rain(self):
