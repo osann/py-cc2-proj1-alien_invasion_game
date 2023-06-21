@@ -40,4 +40,7 @@ class Settings:
         self.rain_height = 10
         self.raindrops_limit = 100
 
+        # Target settings
+        self.target_movement_speed = 0.25
+
     # -------------------- End class Settings

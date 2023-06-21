@@ -15,6 +15,7 @@ from ship import Ship
 from alien import AlienFactory
 from game_statistics import Stats
 from button import Button
+from target import Target
 
 
 class AlienInvasion:
@@ -42,10 +43,11 @@ class AlienInvasion:
         self.rain = pygame.sprite.Group()
 
         self.alien_factory = AlienFactory(self)
-        self.alien_factory.build_wave()
+        self.target = Target(self)
 
         self.game_stats = Stats(self)
         self.play_button = Button(self, "Play")
+        self.bonus_button = Button(self, "Target Practice", 75)
 
     # -------------------- Game loop
     def run(self):
@@ -56,29 +58,56 @@ class AlienInvasion:
             self._create_rain()
             self._update_rain()
 
+            if not self.game_stats.game_active and not self.game_stats.bonus_game_active:
+                self._update_menu_screen()
+
             if self.game_stats.game_active:
                 self._update_aliens()
                 self._update_bullets()
                 self.ship.update()
+                self._update_game_screen()
 
-            self._update_screen()
+            if self.game_stats.bonus_game_active:
+                self._update_target()
+                self._update_bullets()
+                self.ship.update()
+                self._update_bonus_game_screen()
 
     # -------------------- Update handlers
-    def _update_screen(self):
+    def _update_game_screen(self):
         """Update the Pygame window"""
         self.window.fill(self.settings.bg_colour)
-        self.ship.blitme()
-        for bullet in self.bullets.sprites():
-            bullet.draw_bullet()
+        self._update_ship_bullets()
         self.alien_factory.aliens.draw(self.window)
         for raindrop in self.rain.sprites():
             raindrop.draw_rain()
 
-        if not self.game_stats.game_active:
-            self.play_button.draw_button()
-
         # Draw screen
         pygame.display.flip()
+
+    def _update_bonus_game_screen(self):
+        self.window.fill(self.settings.bg_colour)
+        self._update_ship_bullets()
+        self.target.draw_target()
+        for raindrop in self.rain.sprites():
+            raindrop.draw_rain()
+
+        pygame.display.flip()
+
+    def _update_menu_screen(self):
+        self.window.fill(self.settings.bg_colour)
+        for raindrop in self.rain.sprites():
+            raindrop.draw_rain()
+        if not self.game_stats.game_active:
+            self.play_button.draw_button()
+            self.bonus_button.draw_button()
+
+        pygame.display.flip()
+
+    def _update_ship_bullets(self):
+        self.ship.blitme()
+        for bullet in self.bullets.sprites():
+            bullet.draw_bullet()
 
     # -------------------- Event handlers
     def _check_events(self):
@@ -103,6 +132,10 @@ class AlienInvasion:
             sys.exit()
         if event.key == pygame.K_SPACE:
             self._fire_bullet()
+        if event.key == pygame.K_p:
+            self._start_game()
+        if event.key == pygame.K_b:
+            self._start_bonus_game()
 
         # Movement keys
         if event.key == pygame.K_w:
@@ -127,14 +160,34 @@ class AlienInvasion:
             self.ship.moving_right = False
 
     def _check_play_button(self, mouse_pos):
-        button_clicked = self.play_button.rect.collidepoint(mouse_pos)
-        if button_clicked and not self.game_stats.game_active:
+        if self.play_button.rect.collidepoint(mouse_pos):
+            self._start_game()
+
+    def _check_bonus_button(self, mouse_pos):
+        if self.bonus_button.rect.collidepoint(mouse_pos):
+            self._start_bonus_game()
+
+    def _start_game(self):
+        if not self.game_stats.game_active:
             self.game_stats.reset_stats()
             self.game_stats.game_active = True
-            self.alien_factory.aliens.empty()
-            self.bullets.empty()
+            self._reset_game()
             self.alien_factory.build_wave()
-            self.ship.centre_ship()
+            pygame.mouse.set_visible(False)
+
+    def _reset_game(self):
+        self.alien_factory.aliens.empty()
+        self.bullets.empty()
+        self.ship.centre_ship()
+        self.target.centre_target()
+
+    def _start_bonus_game(self):
+        if not self.game_stats.game_active:
+            self.game_stats.reset_stats()
+            self.game_stats.bonus_game_active = True
+            self._reset_game()
+            pygame.mouse.set_visible(False)
+
 
     # -------------------- Ship functions
     def _fire_bullet(self):
@@ -172,12 +225,10 @@ class AlienInvasion:
                 print(f"lives: {self.game_stats.lives}")
         else:
             self.game_stats.game_active = False
+            pygame.mouse.set_visible(True)
 
-        self.alien_factory.aliens.empty()
-        self.bullets.empty()
-        self.alien_factory.build_wave()
-        self.ship.centre_ship()
-        self._update_screen()
+        self._reset_game()
+        self._update_game_screen()
 
         sleep(1)
 
@@ -223,6 +274,11 @@ class AlienInvasion:
         raindrop.rect.x = raindrop.x
         raindrop.y = randint(0, self.settings.window_height) - self.settings.window_height
         self.rain.add(raindrop)
+
+    # -------------------- Target functions
+    def _update_target(self):
+        self.target.update()
+        self.target._check_target_hit_wall()
 
     # -------------------- End class AlienInvasion
 

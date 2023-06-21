@@ -10,18 +10,19 @@ class Button:
     Creates instance of a button on screen.
     """
 
-    def __init__(self, ai_game, text):
+    def __init__(self, ai_game, text, offset = 0):
         """Init button"""
         self.window = ai_game.window
         self.window_size = ai_game.window.get_rect()
 
-        self.width, self.height = 200, 50
+        self.width, self.height = 300, 50
         self.colour = (255, 0, 255)
         self.text_colour = (255, 255, 255)
         self.font = pygame.font.SysFont(None, 48)
 
         self.rect = pygame.Rect(0, 0, self.width, self.height)
         self.rect.center = self.window_size.center
+        self.rect.y += offset
 
         self._prep_text(text)
 
