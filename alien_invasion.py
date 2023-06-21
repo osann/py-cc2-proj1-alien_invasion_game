@@ -124,12 +124,18 @@ class AlienInvasion:
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 self._check_play_button(mouse_pos)
+                self._check_bonus_button(mouse_pos)
 
     def _check_keydown_events(self, event):
         """Checks KEYDOWN events"""
         # Other keys
-        if event.key == pygame.K_ESCAPE:
-            sys.exit()
+        if event.key == pygame.K_ESCAPE:    # Goes back to menu if in game, quits if in menu
+            if not self.game_stats.game_active and not self.game_stats.bonus_game_active:
+                sys.exit()
+            self.game_stats.game_active = False
+            self.game_stats.bonus_game_active = False
+            pygame.mouse.set_visible(True)
+
         if event.key == pygame.K_SPACE:
             if self.game_stats.game_active:
                 self._fire_bullet()
