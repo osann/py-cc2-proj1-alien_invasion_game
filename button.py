@@ -4,10 +4,12 @@ By JH.osan
 """
 import pygame
 
+
 class Button:
     """
     Creates instance of a button on screen.
     """
+
     def __init__(self, ai_game, text):
         """Init button"""
         self.window = ai_game.window

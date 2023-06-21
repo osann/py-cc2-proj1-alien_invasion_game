@@ -127,8 +127,14 @@ class AlienInvasion:
             self.ship.moving_right = False
 
     def _check_play_button(self, mouse_pos):
-        if self.play_button.rect.collidepoint(mouse_pos):
+        button_clicked = self.play_button.rect.collidepoint(mouse_pos)
+        if button_clicked and not self.game_stats.game_active:
+            self.game_stats.reset_stats()
             self.game_stats.game_active = True
+            self.alien_factory.aliens.empty()
+            self.bullets.empty()
+            self.alien_factory.build_wave()
+            self.ship.centre_ship()
 
     # -------------------- Ship functions
     def _fire_bullet(self):
