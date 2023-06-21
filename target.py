@@ -16,8 +16,8 @@ class Target(Sprite):
         self.window_size = ai_game.window.get_rect()
         self.settings = ai_game.settings
 
-        self.width, self.height = 50, 200
-        self.colour = (255, 0, 0)
+        self.width, self.height = self.settings.target_width, self.settings.target_height
+        self.colour = self.settings.target_colour
 
         self.rect = pygame.Rect(0, 0, self.width, self.height)
 

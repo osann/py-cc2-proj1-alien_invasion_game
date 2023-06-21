@@ -179,6 +179,7 @@ class AlienInvasion:
 
     def _start_game(self):
         if not self.game_stats.game_active:
+            self.settings.init_dynamic_settings()
             self.game_stats.reset_stats()
             self.game_stats.game_active = True
             self._reset_game()
@@ -241,11 +242,13 @@ class AlienInvasion:
         if not self.alien_factory.aliens:
             self.bullets.empty()
             self.alien_factory.build_wave()
+            self.settings.increase_speed()
 
     def _check_bullet_collisions_bonus(self):
         """Detects a bullet hitting the target and updates the score"""
         collide = pygame.sprite.spritecollideany(self.target, self.bullets)
         if collide:
+            self.settings.increase_speed()
             self.bullets.empty()
             self.game_stats.target_practice_score += 10
             if self.settings.debug_mode:
@@ -255,7 +258,6 @@ class AlienInvasion:
         """Response to getting hit by an alien"""
         if self.game_stats.lives > 1:
             self.game_stats.lives -= 1
-
             if self.settings.debug_mode:
                 print(f"lives: {self.game_stats.lives}")
         else:

@@ -21,17 +21,14 @@ class Settings:
         self.fullscreen_mode = False
 
         # Ship settings
-        self.ship_speed = 1
         self.max_lives = 3
 
         # Bullet settings
-        self.bullet_speed = 2
         self.bullet_width = 20
         self.bullet_height = 5
         self.bullet_colour = (224, 71, 255)
 
         # Alien settings
-        self.alien_x_speed = 0.25
         self.aliens_limit = 5
 
         # Rain settings
@@ -41,7 +38,31 @@ class Settings:
         self.rain_height = 10
         self.raindrops_limit = 100
 
-        # Target practice settings
+        # Target settings
+        self.target_width = 50
+        self.target_height = 200
+        self.target_colour = (255, 0, 0)
+
+        # Speed scaler
+        self.speed_scaler = 1.2
+
+        self.init_dynamic_settings()
+
+    def init_dynamic_settings(self):
+        # Ship
+        self.ship_speed = 0.75
+        self.bullet_speed = 1.5
+
+        # Aliens
+        self.alien_x_speed = 0.5
+
+        # Target
         self.target_movement_speed = 0.25
+
+    def increase_speed(self):
+        self.ship_speed *= self.speed_scaler
+        self.bullet_speed *= self.speed_scaler
+        self.alien_x_speed *= self.speed_scaler
+        self.target_movement_speed *= self.speed_scaler
 
     # -------------------- End class Settings
