@@ -14,6 +14,7 @@ from settings import Settings
 from ship import Ship
 from alien import AlienFactory
 from game_statistics import Stats
+from button import Button
 
 
 class AlienInvasion:
@@ -44,6 +45,7 @@ class AlienInvasion:
         self.alien_factory.build_wave()
 
         self.game_stats = Stats(self)
+        self.play_button = Button(self, "Play")
 
     # -------------------- Game loop
     def run(self):
@@ -72,6 +74,9 @@ class AlienInvasion:
         for raindrop in self.rain.sprites():
             raindrop.draw_rain()
 
+        if not self.game_stats.game_active:
+            self.play_button.draw_button()
+
         # Draw screen
         pygame.display.flip()
 
@@ -84,10 +89,12 @@ class AlienInvasion:
             elif event.type == pygame.KEYDOWN:
                 if self.settings.debug_mode:  # Debug messages
                     print(event)
-
                 self._check_keydown_events(event)
             elif event.type == pygame.KEYUP:
                 self._check_keyup_events(event)
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                self._check_play_button(mouse_pos)
 
     def _check_keydown_events(self, event):
         """Checks KEYDOWN events"""
@@ -118,6 +125,10 @@ class AlienInvasion:
             self.ship.moving_left = False
         if event.key == pygame.K_d:
             self.ship.moving_right = False
+
+    def _check_play_button(self, mouse_pos):
+        if self.play_button.rect.collidepoint(mouse_pos):
+            self.game_stats.game_active = True
 
     # -------------------- Ship functions
     def _fire_bullet(self):
