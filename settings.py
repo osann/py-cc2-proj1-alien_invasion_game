@@ -17,6 +17,7 @@ class Settings:
 
         # Mode settings
         self.debug_mode = True
+        self.super_debug_mode = False
         self.fullscreen_mode = False
 
         # Ship settings
@@ -40,7 +41,7 @@ class Settings:
         self.rain_height = 10
         self.raindrops_limit = 100
 
-        # Target settings
+        # Target practice settings
         self.target_movement_speed = 0.25
 
     # -------------------- End class Settings
