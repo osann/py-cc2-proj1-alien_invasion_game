@@ -20,8 +20,9 @@ class Settings:
         self.super_debug_mode = False
         self.fullscreen_mode = False
 
-        # Ship settings
+        # Life settings
         self.max_lives = 3
+        self.max_lives_bonus = 6
 
         # Bullet settings
         self.bullet_width = 20
@@ -45,24 +46,54 @@ class Settings:
 
         # Speed scaler
         self.speed_scaler = 1.2
+        self.neg_speed_scaler = 0.6
+
+        # Menu Colours
+        self.button_colour = (255, 0 ,255)
+        self.button_highlight = (0, 0, 255)
 
         self.init_dynamic_settings()
 
     def init_dynamic_settings(self):
         # Ship
-        self.ship_speed = 0.75
-        self.bullet_speed = 1.5
+        self.ship_speed = 0.5
+        self.bullet_speed = 1
 
         # Aliens
-        self.alien_x_speed = 0.5
+        self.alien_x_speed = 0.2
 
         # Target
-        self.target_movement_speed = 0.25
+        self.target_movement_speed = 0.1
 
     def increase_speed(self):
         self.ship_speed *= self.speed_scaler
         self.bullet_speed *= self.speed_scaler
         self.alien_x_speed *= self.speed_scaler
         self.target_movement_speed *= self.speed_scaler
+
+    def decrease_speed(self):
+        self.ship_speed *= self.neg_speed_scaler
+        self.bullet_speed *= self.neg_speed_scaler
+        self.alien_x_speed *= self.neg_speed_scaler
+        self.target_movement_speed *= self.neg_speed_scaler
+
+    def difficulty_easy(self):
+        self.speed_scaler = 1.1
+        self.neg_speed_scaler = 0.8
+        if self.debug_mode:
+            print(f"difficulty: easy speed_scaler: {self.speed_scaler} neg_speed_scaler: {self.neg_speed_scaler}")
+
+    def difficulty_med(self):
+        self.speed_scaler = 1.2
+        self.neg_speed_scaler = 0.6
+        if self.debug_mode:
+            print(f"difficulty: medium speed_scaler: {self.speed_scaler} neg_speed_scaler: {self.neg_speed_scaler}")
+
+
+    def difficulty_hard(self):
+        self.speed_scaler = 1.4
+        self.neg_speed_scaler = 0.6
+        if self.debug_mode:
+            print(f"difficulty: hard speed_scaler: {self.speed_scaler} neg_speed_scaler: {self.neg_speed_scaler}")
 
     # -------------------- End class Settings

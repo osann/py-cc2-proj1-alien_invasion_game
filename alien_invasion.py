@@ -16,6 +16,7 @@ from alien import AlienFactory
 from game_statistics import Stats
 from button import Button
 from target import Target
+from menu import Menu
 
 
 class AlienInvasion:
@@ -46,8 +47,8 @@ class AlienInvasion:
         self.target = Target(self)
 
         self.game_stats = Stats(self)
-        self.play_button = Button(self, "Play")
-        self.bonus_button = Button(self, "Target Practice", 75)
+        self.menu = Menu(self)
+
 
     # -------------------- Game loop
     def run(self):
@@ -99,8 +100,7 @@ class AlienInvasion:
         for raindrop in self.rain.sprites():
             raindrop.draw_rain()
         if not self.game_stats.game_active:
-            self.play_button.draw_button()
-            self.bonus_button.draw_button()
+            self.menu.draw_menu()
 
         pygame.display.flip()
 
@@ -122,16 +122,17 @@ class AlienInvasion:
             elif event.type == pygame.KEYUP:
                 self._check_keyup_events(event)
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_pos = pygame.mouse.get_pos()
-                self._check_play_button(mouse_pos)
-                self._check_bonus_button(mouse_pos)
+                self.menu._check_buttons(pygame.mouse.get_pos())
 
     def _check_keydown_events(self, event):
         """Checks KEYDOWN events"""
         # Other keys
-        if event.key == pygame.K_ESCAPE:    # Goes back to menu if in game, quits if in menu
+        if event.key == pygame.K_ESCAPE:
             if not self.game_stats.game_active and not self.game_stats.bonus_game_active:
-                sys.exit()
+                if self.menu.current_menu == "settings":
+                    self.menu.return_to_main_menu()
+                else:
+                    sys.exit(0)
             self.game_stats.game_active = False
             self.game_stats.bonus_game_active = False
             pygame.mouse.set_visible(True)
@@ -169,14 +170,7 @@ class AlienInvasion:
         if event.key == pygame.K_d:
             self.ship.moving_right = False
 
-    def _check_play_button(self, mouse_pos):
-        if self.play_button.rect.collidepoint(mouse_pos):
-            self._start_game()
-
-    def _check_bonus_button(self, mouse_pos):
-        if self.bonus_button.rect.collidepoint(mouse_pos):
-            self._start_bonus_game()
-
+    # -------------------- Game flows
     def _start_game(self):
         if not self.game_stats.game_active:
             self.settings.init_dynamic_settings()
@@ -191,12 +185,14 @@ class AlienInvasion:
         self.bullets.empty()
         self.ship.centre_ship()
         self.target.centre_target()
+        self.settings.init_dynamic_settings()
 
     def _start_bonus_game(self):
         if not self.game_stats.game_active:
             self.game_stats.reset_stats()
             self.game_stats.bonus_game_active = True
             self._reset_game()
+            self.game_stats.lives = self.settings.max_lives_bonus
             pygame.mouse.set_visible(False)
 
 
@@ -258,6 +254,7 @@ class AlienInvasion:
         """Response to getting hit by an alien"""
         if self.game_stats.lives > 1:
             self.game_stats.lives -= 1
+            self.settings.decrease_speed()
             if self.settings.debug_mode:
                 print(f"lives: {self.game_stats.lives}")
         else:
