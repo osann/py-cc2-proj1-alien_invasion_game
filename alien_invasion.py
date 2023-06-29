@@ -14,9 +14,9 @@ from settings import Settings
 from ship import Ship
 from alien import AlienFactory
 from game_statistics import Stats
-from button import Button
 from target import Target
 from menu import Menu
+from scoreboard import Scoreboard
 
 
 class AlienInvasion:
@@ -47,8 +47,9 @@ class AlienInvasion:
         self.target = Target(self)
 
         self.game_stats = Stats(self)
-        self.menu = Menu(self)
+        self.scoreboard = Scoreboard(self)
 
+        self.menu = Menu(self)
 
     # -------------------- Game loop
     def run(self):
@@ -77,21 +78,15 @@ class AlienInvasion:
     # -------------------- Update handlers
     def _update_game_screen(self):
         """Update the Pygame window"""
-        self.window.fill(self.settings.bg_colour)
-        self._update_ship_and_bullets()
+        self._update_game_elements()
         self.alien_factory.aliens.draw(self.window)
-        for raindrop in self.rain.sprites():
-            raindrop.draw_rain()
 
         # Draw screen
         pygame.display.flip()
 
     def _update_bonus_game_screen(self):
-        self.window.fill(self.settings.bg_colour)
-        self._update_ship_and_bullets()
+        self._update_game_elements()
         self.target.draw_target()
-        for raindrop in self.rain.sprites():
-            raindrop.draw_rain()
 
         pygame.display.flip()
 
@@ -99,15 +94,18 @@ class AlienInvasion:
         self.window.fill(self.settings.bg_colour)
         for raindrop in self.rain.sprites():
             raindrop.draw_rain()
-        if not self.game_stats.game_active:
-            self.menu.draw_menu()
+        self.menu.draw_menu()
 
         pygame.display.flip()
 
-    def _update_ship_and_bullets(self):
+    def _update_game_elements(self):
+        self.window.fill(self.settings.bg_colour)
         self.ship.blitme()
+        self.scoreboard.draw_score()
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
+        for raindrop in self.rain.sprites():
+            raindrop.draw_rain()
 
     # -------------------- Event handlers
     def _check_events(self):
@@ -141,7 +139,7 @@ class AlienInvasion:
             if self.game_stats.game_active:
                 self._fire_bullet()
             if self.game_stats.bonus_game_active:
-                if not self.bullets:     # Limits ship to single shot
+                if not self.bullets:  # Limits ship to single shot
                     self._fire_bullet()
         if event.key == pygame.K_p:
             self._start_game()
@@ -186,6 +184,7 @@ class AlienInvasion:
         self.ship.centre_ship()
         self.target.centre_target()
         self.settings.init_dynamic_settings()
+        self.scoreboard.prep_score()
 
     def _start_bonus_game(self):
         if not self.game_stats.game_active:
@@ -194,7 +193,6 @@ class AlienInvasion:
             self._reset_game()
             self.game_stats.lives = self.settings.max_lives_bonus
             pygame.mouse.set_visible(False)
-
 
     # -------------------- Ship functions
     def _fire_bullet(self):
@@ -220,13 +218,15 @@ class AlienInvasion:
         for bullet in self.bullets.copy():
             if bullet.x > self.settings.window_width:
                 self.bullets.empty()
-                self.game_stats.target_practice_score -= 10
+                if self.game_stats.bonus_game_active:
+                    self.game_stats.score -= 2 * (self.settings.score_penalty)
+                    self.scoreboard.prep_score()
                 self.game_stats.lives -= 1
                 if self.game_stats.lives <= 0:
                     self.game_stats.bonus_game_active = False
                     pygame.mouse.set_visible(True)
                 if self.settings.debug_mode:
-                    print(f"score: {self.game_stats.target_practice_score}\nlives: {self.game_stats.lives}")
+                    print(f"score: {self.game_stats.score}\nlives: {self.game_stats.lives}")
 
         self._check_bullet_collisions_bonus()
 
@@ -235,6 +235,10 @@ class AlienInvasion:
         collisions = pygame.sprite.groupcollide(
             self.bullets, self.alien_factory.aliens, True, True
         )
+        if collisions:
+            for a in collisions.values():
+                self.game_stats.score += self.settings.alien_points * len(a)
+            self.scoreboard.prep_score()
         if not self.alien_factory.aliens:
             self.bullets.empty()
             self.alien_factory.build_wave()
@@ -246,14 +250,17 @@ class AlienInvasion:
         if collide:
             self.settings.increase_speed()
             self.bullets.empty()
-            self.game_stats.target_practice_score += 10
+            self.game_stats.score += self.settings.target_points
+            self.scoreboard.prep_score()
             if self.settings.debug_mode:
-                print(f"score: {self.game_stats.target_practice_score}")
+                print(f"score: {self.game_stats.score}")
 
     def _ship_hit(self):
         """Response to getting hit by an alien"""
         if self.game_stats.lives > 1:
             self.game_stats.lives -= 1
+            self.game_stats.score -= self.settings.score_penalty
+            self.scoreboard.prep_score()
             self.settings.decrease_speed()
             if self.settings.debug_mode:
                 print(f"lives: {self.game_stats.lives}")

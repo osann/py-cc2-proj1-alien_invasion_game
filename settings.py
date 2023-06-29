@@ -23,10 +23,11 @@ class Settings:
         # Life settings
         self.max_lives = 3
         self.max_lives_bonus = 6
+        self.score_penalty = 50
 
         # Bullet settings
         self.bullet_width = 20
-        self.bullet_height = 5
+        self.bullet_height = 300
         self.bullet_colour = (224, 71, 255)
 
         # Alien settings
@@ -61,9 +62,11 @@ class Settings:
 
         # Aliens
         self.alien_x_speed = 0.2
+        self.alien_points = 50
 
         # Target
         self.target_movement_speed = 0.1
+        self.target_points = 50
 
     def increase_speed(self):
         self.ship_speed *= self.speed_scaler
