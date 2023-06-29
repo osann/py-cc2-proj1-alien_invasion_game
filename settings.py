@@ -48,6 +48,7 @@ class Settings:
         # Speed scaler
         self.speed_scaler = 1.2
         self.neg_speed_scaler = 0.6
+        self.score_scale = 1.5
 
         # Menu Colours
         self.button_colour = (255, 0 ,255)
@@ -73,6 +74,11 @@ class Settings:
         self.bullet_speed *= self.speed_scaler
         self.alien_x_speed *= self.speed_scaler
         self.target_movement_speed *= self.speed_scaler
+
+        self.alien_points = int(self.alien_points * self.score_scale)
+        self.target_points = int(self.target_points * self.score_scale)
+        if self.debug_mode:
+            print(f"alien_points: {self.alien_points} target points: {self.target_points}")
 
     def decrease_speed(self):
         self.ship_speed *= self.neg_speed_scaler
