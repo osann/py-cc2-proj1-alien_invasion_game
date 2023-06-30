@@ -170,13 +170,12 @@ class AlienInvasion:
 
     # -------------------- Game flows
     def _start_game(self):
-        if not self.game_stats.game_active:
-            self.settings.init_dynamic_settings()
-            self.game_stats.reset_stats()
-            self.game_stats.game_active = True
-            self._reset_game()
-            self.alien_factory.build_wave()
-            pygame.mouse.set_visible(False)
+        self.game_stats.game_active = True
+        self.settings.init_dynamic_settings()
+        self.scoreboard.prep_alien_hscore()
+        self._reset_game()
+        self.alien_factory.build_wave()
+        pygame.mouse.set_visible(False)
 
     def _reset_game(self):
         self.alien_factory.aliens.empty()
@@ -187,12 +186,11 @@ class AlienInvasion:
         self.scoreboard.prep_score()
 
     def _start_bonus_game(self):
-        if not self.game_stats.game_active:
-            self.game_stats.reset_stats()
-            self.game_stats.bonus_game_active = True
-            self._reset_game()
-            self.game_stats.lives = self.settings.max_lives_bonus
-            pygame.mouse.set_visible(False)
+        self.game_stats.bonus_game_active = True
+        self.scoreboard.prep_tp_hscore()
+        self._reset_game()
+        self.game_stats.lives = self.settings.max_lives_bonus
+        pygame.mouse.set_visible(False)
 
     # -------------------- Ship functions
     def _fire_bullet(self):
@@ -239,6 +237,7 @@ class AlienInvasion:
             for a in collisions.values():
                 self.game_stats.score += self.settings.alien_points * len(a)
             self.scoreboard.prep_score()
+            self.scoreboard.check_alien_hscore()
         if not self.alien_factory.aliens:
             self.bullets.empty()
             self.alien_factory.build_wave()
@@ -252,6 +251,7 @@ class AlienInvasion:
             self.bullets.empty()
             self.game_stats.score += self.settings.target_points
             self.scoreboard.prep_score()
+            self.scoreboard.check_tp_hscore()
             if self.settings.debug_mode:
                 print(f"score: {self.game_stats.score}")
 
@@ -265,7 +265,9 @@ class AlienInvasion:
             if self.settings.debug_mode:
                 print(f"lives: {self.game_stats.lives}")
         else:
+            self.game_stats.reset_stats()
             self.game_stats.game_active = False
+
             pygame.mouse.set_visible(True)
 
         self._reset_game()

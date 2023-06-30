@@ -14,16 +14,11 @@ class Stats:
         self.target_practice_high_score = 0
         self.aliens_high_score = 0
         self.settings = ai_game.settings
-        self.reset_stats()
         self.game_active = False
         self.bonus_game_active = False
+        self.reset_stats()
 
     def reset_stats(self):
         """Reset statistics to default"""
-        if self.score >= self.target_practice_high_score:
-            self.target_practice_high_score = self.score
-        elif self.score >= self.aliens_high_score:
-            self.aliens_high_score = self.score
-
         self.score = 0
         self.lives = self.settings.max_lives
