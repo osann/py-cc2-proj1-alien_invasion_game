@@ -341,13 +341,16 @@ class AlienInvasion:
 
     def get_hscores(self):
         file = "highscores.txt"
-        with open(file, 'r') as fo:
-            for l in fo:
-                tokens = l.split(" ")
-                if tokens[0] == "a_hs":
-                    self.game_stats.aliens_high_score = int(tokens[2])
-                if tokens[0] == "t_hs":
-                    self.game_stats.target_practice_high_score = int(tokens[2])
+        try:
+            with open(file, 'r') as fo:
+                for l in fo:
+                    tokens = l.split(" ")
+                    if tokens[0] == "a_hs":
+                        self.game_stats.aliens_high_score = int(tokens[2])
+                    if tokens[0] == "t_hs":
+                        self.game_stats.target_practice_high_score = int(tokens[2])
+        except FileNotFoundError:
+            print(f"No 'highscores.txt' saved.")
 
 
     # -------------------- End class AlienInvasion
