@@ -2,18 +2,27 @@
 Project I from Python Crash Course
 By JH.osan
 """
+import pygame
+
 from button import Button
 
 class Menu:
     def __init__(self, ai_game):
         self.window = ai_game.window
+        self.window_rect = ai_game.window.get_rect()
         self.settings = ai_game.settings
         self.game_instance = ai_game
 
         self.current_menu = "main"
 
+        self.font = pygame.font.SysFont(None, 100)
+
         # Menu buttons
         # Main Menu
+        self.title = self.font.render("Alien Invasion!", True, (30, 200, 30), self.settings.bg_colour)
+        self.title_rect = self.title.get_rect()
+        self.title_rect.center = self.window_rect.center
+        self.title_rect.y -= 150
         self.play_button = Button(self, "Play", -175, 0)
         self.bonus_button = Button(self, "Target Practice", 175, 0)
         self.settings_button = Button(self, "Settings", 0, 75)
@@ -33,6 +42,7 @@ class Menu:
         self.current_menu = "main"
 
     def _display_main_menu(self):
+        self.window.blit(self.title, self.title_rect)
         self.play_button.draw_button()
         self.bonus_button.draw_button()
         self.settings_button.draw_button()
