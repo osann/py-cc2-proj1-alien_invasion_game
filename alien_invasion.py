@@ -49,6 +49,8 @@ class AlienInvasion:
         self.game_stats = Stats(self)
         self.scoreboard = Scoreboard(self)
 
+        self.get_hscores()
+
         self.menu = Menu(self)
 
     # -------------------- Game loop
@@ -130,6 +132,7 @@ class AlienInvasion:
                 if self.menu.current_menu == "settings":
                     self.menu.return_to_main_menu()
                 else:
+                    self.save_hscores()
                     sys.exit(0)
             self.game_stats.game_active = False
             self.game_stats.bonus_game_active = False
@@ -174,6 +177,7 @@ class AlienInvasion:
         self.game_stats.game_active = True
         self.settings.init_dynamic_settings()
         self.scoreboard.prep_alien_hscore()
+        self.scoreboard.prep_ships()
         self._reset_game()
         self.alien_factory.build_wave()
         pygame.mouse.set_visible(False)
@@ -188,10 +192,11 @@ class AlienInvasion:
 
     def _start_bonus_game(self):
         self.game_stats.reset_stats()
+        self.game_stats.lives = self.settings.max_lives_bonus
         self.game_stats.bonus_game_active = True
         self.scoreboard.prep_tp_hscore()
+        self.scoreboard.prep_ships()
         self._reset_game()
-        self.game_stats.lives = self.settings.max_lives_bonus
         pygame.mouse.set_visible(False)
 
     # -------------------- Ship functions
@@ -222,6 +227,7 @@ class AlienInvasion:
                     self.game_stats.score -= 2 * (self.settings.score_penalty)
                     self.scoreboard.prep_score()
                 self.game_stats.lives -= 1
+                self.scoreboard.prep_ships()
                 if self.game_stats.lives <= 0:
                     self.game_stats.bonus_game_active = False
                     pygame.mouse.set_visible(True)
@@ -261,6 +267,7 @@ class AlienInvasion:
         """Response to getting hit by an alien"""
         if self.game_stats.lives > 1:
             self.game_stats.lives -= 1
+            self.scoreboard.prep_ships()
             self.game_stats.score -= self.settings.score_penalty
             self.scoreboard.prep_score()
             self.settings.decrease_speed()
@@ -324,6 +331,24 @@ class AlienInvasion:
     def _update_target(self):
         self.target.update()
         self.target._check_target_hit_wall()
+
+    # -------------------- File handling
+    def save_hscores(self):
+        file = "highscores.txt"
+        with open(file, 'w') as fo:
+            fo.write(f"a_hs = {self.game_stats.aliens_high_score}\n")
+            fo.write(f"t_hs = {self.game_stats.target_practice_high_score}")
+
+    def get_hscores(self):
+        file = "highscores.txt"
+        with open(file, 'r') as fo:
+            for l in fo:
+                tokens = l.split(" ")
+                if tokens[0] == "a_hs":
+                    self.game_stats.aliens_high_score = int(tokens[2])
+                if tokens[0] == "t_hs":
+                    self.game_stats.target_practice_high_score = int(tokens[2])
+
 
     # -------------------- End class AlienInvasion
 
