@@ -23,7 +23,6 @@ class Settings:
         # Life settings
         self.max_lives = 3
         self.max_lives_bonus = 6
-        self.score_penalty = 50
 
         # Bullet settings
         self.bullet_width = 20
@@ -63,11 +62,14 @@ class Settings:
 
         # Aliens
         self.alien_x_speed = 0.2
-        self.alien_points = 50
 
         # Target
         self.target_movement_speed = 0.1
+
+        # Points
+        self.alien_points = 50
         self.target_points = 50
+        self.score_penalty = 100
 
     def increase_speed(self):
         self.ship_speed *= self.speed_scaler
@@ -77,6 +79,7 @@ class Settings:
 
         self.alien_points = int(self.alien_points * self.score_scale)
         self.target_points = int(self.target_points * self.score_scale)
+        self.score_penalty = int(self.score_penalty * self.score_scale)
         if self.debug_mode:
             print(f"alien_points: {self.alien_points} target points: {self.target_points}")
 
