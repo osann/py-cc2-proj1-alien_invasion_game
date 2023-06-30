@@ -3,15 +3,17 @@ Project I from Python Crash Course
 By JH.osan
 """
 import pygame
+from pygame.sprite import Sprite
 
 
-class Ship:
+class Ship(Sprite):
     """
     A class to manage the players ship
     """
 
     def __init__(self, ai_game):
         """Init players ship"""
+        super().__init__()
         self.window = ai_game.window
         self.window_size = ai_game.window.get_rect()
 
