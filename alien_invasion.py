@@ -170,6 +170,7 @@ class AlienInvasion:
 
     # -------------------- Game flows
     def _start_game(self):
+        self.game_stats.reset_stats()
         self.game_stats.game_active = True
         self.settings.init_dynamic_settings()
         self.scoreboard.prep_alien_hscore()
@@ -186,6 +187,7 @@ class AlienInvasion:
         self.scoreboard.prep_score()
 
     def _start_bonus_game(self):
+        self.game_stats.reset_stats()
         self.game_stats.bonus_game_active = True
         self.scoreboard.prep_tp_hscore()
         self._reset_game()
